@@ -25,7 +25,7 @@
         let liste = [];
         let historie = [];
         let isRemoteUpdate = false;
-        let isInitialized = false; // Verhindert ständiges Neuladen der Top 10 im Echtzeit-Takt
+        let isInitialized = false;
 
         const inputField = document.getElementById('eingabe');
 
@@ -37,7 +37,6 @@
                 liste = data.einkauf || [];
                 historie = data.historie || [];
                 
-                // Top 10 nur beim ersten Laden der Seite berechnen
                 if (!isInitialized) {
                     berechneTop10Einmalig();
                     isInitialized = true;
@@ -127,7 +126,6 @@
             inputField.focus();
         };
 
-        // Neue Funktionen zum Leeren
         window.leereErledigte = function() {
             if(confirm("Alle erledigten Artikel löschen?")) {
                 liste = liste.filter(i => !i.done);
@@ -160,6 +158,19 @@
             render();
         };
 
+        // Funktion zum Bearbeiten eines Listeneintrags
+        window.bearbeiteItem = function(id) {
+            const item = liste.find(i => i.id === id);
+            if (!item) return;
+            const neuerText = prompt("Artikel bearbeiten:", item.text);
+            if (neuerText !== null && neuerText.trim() !== "") {
+                item.text = neuerText.trim();
+                historie.push(item.text);
+                saveToCloud();
+                render();
+            }
+        };
+
         window.loeschen = function(id) {
             liste = liste.filter(i => i.id !== id);
             saveToCloud();
@@ -189,6 +200,7 @@
                 return `
                 <li class="${i.done ? 'completed' : ''} ${isDuplicate ? 'duplicate' : ''}">
                     <input type="checkbox" ${i.done ? 'checked' : ''} onchange="toggleCheck(${i.id})">
+                    <button class="edit-btn" onclick="bearbeiteItem(${i.id})" title="Bearbeiten">✏️</button>
                     <span style="font-size: 1.05rem;">${i.text}</span>
                     <div class="qty-ctrl">
                         <button class="qty-btn" ${i.qty <= 1 ? 'disabled' : ''} onclick="changeQty(${i.id}, -1)">-</button>
@@ -227,9 +239,8 @@
         
         button.add-btn { width: 100%; padding: 14px; background: var(--main-color); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 12px; cursor: pointer; }
         
-        /* Neuer Button-Container für die Leeren-Funktionen */
         .action-buttons { display: flex; gap: 8px; margin-top: 10px; }
-        .action-btn { flex: 1; padding: 10px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 60now; font-size: 0.9rem; cursor: pointer; color: #475569; }
+        .action-btn { flex: 1; padding: 10px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #475569; }
 
         .top-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
         .top-btn { font-size: 0.95rem; padding: 10px 16px; background: #e2e8f0; border: none; border-radius: 25px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
@@ -239,12 +250,16 @@
 
         ul { list-style: none; padding: 0; margin-top: 15px; }
         
-        li { display: grid; grid-template-columns: 40px 1fr 130px 50px; column-gap: 12px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
+        /* Grid angepasst: Checkbox (28px), Stift (28px), Text, Menge, Löschen */
+        li { display: grid; grid-template-columns: 28px 28px 1fr 130px 50px; column-gap: 10px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
         
         li.completed { color: #94a3b8; text-decoration: line-through; }
         li.duplicate { color: #dc2626; font-weight: bold; }
         
-        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; }
+        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; margin: 0; }
+        
+        /* Design für den Bearbeiten-Stift (exakt im Look & Feel der Checkbox) */
+        .edit-btn { width: 28px; height: 28px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
         
         .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; }
         .qty-btn { background: #cbd5e1; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; }
