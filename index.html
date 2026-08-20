@@ -62,7 +62,7 @@
         inputField.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                window.hinzufuegen();
+                window.hinzufuegen(null, true); // Bei Enter Fokus behalten
             }
         });
 
@@ -109,10 +109,11 @@
         window.fill = function(val) {
             inputField.value = val;
             document.getElementById('vorschlaege').style.display = 'none';
-            window.hinzufuegen();
+            window.hinzufuegen(null, true);
         };
 
-        window.hinzufuegen = function(produkt = null) {
+        // Parameter 'behalteFokus' steuert, ob die Tastatur aufgehen soll oder nicht
+        window.hinzufuegen = function(produkt = null, behalteFokus = true) {
             const item = produkt || inputField.value.trim();
             if (!item) return;
             liste.unshift({id: Date.now(), text: item, done: false, qty: 1});
@@ -123,7 +124,12 @@
             document.getElementById('vorschlaege').style.display = 'none';
             saveToCloud();
             render();
-            inputField.focus();
+            
+            if (behalteFokus) {
+                inputField.focus();
+            } else {
+                inputField.blur(); // Nimmt den Fokus weg, schließt die Tastatur auf dem Handy
+            }
         };
 
         window.leereErledigte = function() {
@@ -158,7 +164,6 @@
             render();
         };
 
-        // Funktion zum Bearbeiten eines Listeneintrags
         window.bearbeiteItem = function(id) {
             const item = liste.find(i => i.id === id);
             if (!item) return;
@@ -186,8 +191,9 @@
                 .sort((a, b) => counts[b] - counts[a])
                 .slice(0, 10);
                 
+            // Hier übergeben wir jetzt 'false' als zweiten Wert, damit beim Klick der Fokus verschwindet
             document.getElementById('top-bar').innerHTML = top10.map(t => 
-                `<button class="top-btn" onclick="hinzufuegen('${t.replace(/'/g, "\\'")}')">${t}</button>`
+                `<button class="top-btn" onclick="hinzufuegen('${t.replace(/'/g, "\\'")}', false)">${t}</button>`
             ).join('');
         }
 
@@ -250,7 +256,6 @@
 
         ul { list-style: none; padding: 0; margin-top: 15px; }
         
-        /* Grid angepasst: Checkbox (28px), Stift (28px), Text, Menge, Löschen */
         li { display: grid; grid-template-columns: 28px 28px 1fr 130px 50px; column-gap: 10px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
         
         li.completed { color: #94a3b8; text-decoration: line-through; }
@@ -258,7 +263,6 @@
         
         input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; margin: 0; }
         
-        /* Design für den Bearbeiten-Stift (exakt im Look & Feel der Checkbox) */
         .edit-btn { width: 28px; height: 28px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
         
         .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -279,7 +283,7 @@
     <div class="header-row">
         <div class="title-area">
             <h2>Einkaufsliste</h2>
-            <span class="version">v1.9.2</span>
+            <span class="version">v1.9.3</span>
         </div>
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
     </div>
@@ -287,7 +291,7 @@
         <input type="text" id="eingabe" placeholder="Produkt eingeben..." autocomplete="off">
         <ul id="vorschlaege"></ul>
         
-        <button class="add-btn" onclick="hinzufuegen()">Hinzufügen</button>
+        <button class="add-btn" onclick="hinzufuegen(null, true)">Hinzufügen</button>
         
         <div class="action-buttons">
             <button class="action-btn" onclick="leereErledigte()">Erledigte löschen</button>
