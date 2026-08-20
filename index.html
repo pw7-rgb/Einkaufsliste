@@ -16,42 +16,44 @@
             touch-action: pan-y; 
         }
         
-        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 16px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 14px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2 { margin: 0; font-size: 2.2rem; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .title-area { display: flex; flex-direction: column; }
+        h2 { margin: 0; font-size: 1.6rem; }
+        .version { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 2px; }
         
-        .manage-btn { background: #e2e8f0; border: none; border-radius: 12px; padding: 12px 16px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+        .manage-btn { background: #e2e8f0; border: none; border-radius: 10px; padding: 10px 14px; font-size: 1rem; cursor: pointer; font-weight: bold; }
 
-        .form-group { position: relative; margin-bottom: 20px; }
-        input[type="text"] { width: 100%; padding: 20px; border: 3px solid #cbd5e1; border-radius: 16px; box-sizing: border-box; font-size: 1.4rem; -webkit-appearance: none; }
+        .form-group { position: relative; margin-bottom: 15px; }
+        input[type="text"] { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 1.1rem; -webkit-appearance: none; }
         
-        button.add-btn { width: 100%; padding: 20px; background: var(--main-color); color: white; border: none; border-radius: 16px; font-weight: bold; font-size: 1.4rem; margin-top: 15px; cursor: pointer; }
+        button.add-btn { width: 100%; padding: 14px; background: var(--main-color); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 12px; cursor: pointer; }
         
-        .top-bar { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
-        .top-btn { font-size: 1.1rem; padding: 14px 20px; background: #e2e8f0; border: none; border-radius: 30px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .top-btn { font-size: 0.95rem; padding: 10px 16px; background: #e2e8f0; border: none; border-radius: 25px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
 
-        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 3px solid #cbd5e1; border-radius: 16px; max-height: 300px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-        #vorschlaege li { padding: 20px; font-size: 1.3rem; border-bottom: 2px solid #e2e8f0; }
+        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
+        #vorschlaege li { padding: 14px; font-size: 1.05rem; border-bottom: 1px solid #e2e8f0; }
 
-        ul { list-style: none; padding: 0; margin-top: 20px; }
+        ul { list-style: none; padding: 0; margin-top: 15px; }
         
-        li { display: grid; grid-template-columns: 50px 1fr 160px 60px; column-gap: 15px; align-items: center; padding: 16px 0; border-bottom: 3px solid #f1f5f9; min-height: 80px; }
+        li { display: grid; grid-template-columns: 40px 1fr 130px 50px; column-gap: 12px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
         
         li.completed { color: #94a3b8; text-decoration: line-through; }
         li.duplicate { color: #dc2626; font-weight: bold; }
         
-        input[type="checkbox"] { width: 36px; height: 36px; accent-color: var(--main-color); cursor: pointer; }
+        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; }
         
-        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .qty-btn { background: #cbd5e1; border: none; border-radius: 12px; padding: 10px 18px; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
+        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .qty-btn { background: #cbd5e1; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; }
         .qty-btn:disabled { opacity: 0.3; cursor: default; }
         
-        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 12px 16px; border-radius: 12px; font-size: 1.3rem; justify-self: end; font-weight: bold; cursor: pointer; }
+        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 10px 12px; border-radius: 8px; font-size: 1.05rem; justify-self: end; font-weight: bold; cursor: pointer; }
 
         #admin-view { display: none; }
-        .back-btn { background: #cbd5e1; border: none; border-radius: 16px; padding: 16px; font-size: 1.2rem; font-weight: bold; width: 100%; margin-bottom: 20px; cursor: pointer; }
-        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 2px solid #f1f5f9; font-size: 1.3rem; }
+        .back-btn { background: #cbd5e1; border: none; border-radius: 12px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; font-size: 1.05rem; }
     </style>
 </head>
 <body>
@@ -59,7 +61,10 @@
 <!-- HAUPTANSICHT -->
 <div id="main-view" class="container">
     <div class="header-row">
-        <h2>Meine Liste</h2>
+        <div class="title-area">
+            <h2>Meine Liste</h2>
+            <span class="version">v1.6</span>
+        </div>
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
     </div>
     <div class="form-group">
@@ -98,7 +103,6 @@
 
     const inputField = document.getElementById('eingabe');
 
-    // Echtzeit-Vorschläge und Enter-Taste abfangen
     inputField.addEventListener('input', zeigeEchtzeitVorschlaege);
     inputField.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
@@ -162,8 +166,6 @@
         inputField.value = '';
         document.getElementById('vorschlaege').style.display = 'none';
         render();
-        
-        // Fokus im Textfeld behalten, damit die Tastatur offen bleibt
         inputField.focus();
     }
 
@@ -207,10 +209,10 @@
             return `
             <li class="${i.done ? 'completed' : ''} ${isDuplicate ? 'duplicate' : ''}">
                 <input type="checkbox" ${i.done ? 'checked' : ''} onchange="toggleCheck(${i.id})">
-                <span style="font-size: 1.3rem;">${i.text}</span>
+                <span style="font-size: 1.05rem;">${i.text}</span>
                 <div class="qty-ctrl">
                     <button class="qty-btn" ${i.qty <= 1 ? 'disabled' : ''} onclick="changeQty(${i.id}, -1)">-</button>
-                    <span style="font-size: 1.3rem; font-weight: bold; min-width: 35px; text-align: center;">${i.qty}</span>
+                    <span style="font-size: 1.05rem; font-weight: bold; min-width: 25px; text-align: center;">${i.qty}</span>
                     <button class="qty-btn" onclick="changeQty(${i.id}, 1)">+</button>
                 </div>
                 <button class="del-btn" onclick="loeschen(${i.id})">✕</button>
