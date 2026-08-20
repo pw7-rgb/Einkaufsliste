@@ -24,51 +24,110 @@
 
         let liste = [];
         let historie = [];
-        let isInitialized = false;
+        let isRemoteUpdate = false;
+        let isInitialized = false; // Verhindert ständiges Neuladen der Top 10 im Echtzeit-Takt
 
+        const inputField = document.getElementById('eingabe');
+
+        // Echtzeit-Lauscher für Firebase
         onSnapshot(doc(db, "daten", "einkaufsliste_hauptdaten"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                isRemoteUpdate = true;
                 liste = data.einkauf || [];
                 historie = data.historie || [];
                 
-                // Top10 nur beim ersten Laden berechnen
+                // Top 10 nur beim ersten Laden der Seite berechnen
                 if (!isInitialized) {
-                    berechneTop10();
+                    berechneTop10Einmalig();
                     isInitialized = true;
                 }
+                
                 render();
+                isRemoteUpdate = false;
             }
         });
 
+        // Daten in die Cloud schreiben
         window.saveToCloud = function() {
+            if (isRemoteUpdate) return;
             setDoc(doc(db, "daten", "einkaufsliste_hauptdaten"), {
                 einkauf: liste,
                 historie: historie
+            }).catch((error) => {
+                console.error("Fehler beim Speichern in Firebase: ", error);
             });
         };
 
-        function berechneTop10() {
-            const letzte100 = historie.slice(-100);
-            const counts = {};
-            letzte100.forEach(i => counts[i] = (counts[i] || 0) + 1);
-            const top10 = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 10);
-            document.getElementById('top-bar').innerHTML = top10.map(t => 
-                `<button class="top-btn" onclick="hinzufuegen('${t.replace(/'/g, "\\'")}')">${t}</button>`
-            ).join('');
-        }
+        inputField.addEventListener('input', zeigeEchtzeitVorschlaege);
+        inputField.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                window.hinzufuegen();
+            }
+        });
 
-        window.hinzufuegen = function(produkt = null) {
-            const val = produkt || document.getElementById('eingabe').value.trim();
-            if (!val) return;
-            liste.unshift({id: Date.now(), text: val, done: false, qty: 1});
-            historie.push(val);
-            document.getElementById('eingabe').value = '';
-            document.getElementById('vorschlaege').style.display = 'none';
+        window.zeigeAdmin = function(Oeffnen) {
+            document.getElementById('main-view').style.display = Oeffnen ? 'none' : 'block';
+            document.getElementById('admin-view').style.display = Oeffnen ? 'block' : 'none';
+            if (Oeffnen) {
+                document.getElementById('admin-filter').value = '';
+                renderAdmin();
+            } else {
+                inputField.focus();
+            }
+        };
+
+        window.renderAdmin = function() {
+            const filterText = document.getElementById('admin-filter').value.toLowerCase();
+            const einzigartigeVorschlaege = [...new Set(historie)].sort();
+            const gefiltert = einzigartigeVorschlaege.filter(item => item.toLowerCase().includes(filterText));
+            
+            document.getElementById('admin-liste').innerHTML = gefiltert.map(item => `
+                <div class="admin-item">
+                    <span>${item}</span>
+                    <button class="del-btn" onclick="loescheAusHistorie('${item.replace(/'/g, "\\'")}')">✕ Löschen</button>
+                </div>
+            `).join('');
+        };
+
+        window.loescheAusHistorie = function(item) {
+            historie = historie.filter(h => h !== item);
             saveToCloud();
+            renderAdmin();
             render();
         };
 
+        function zeigeEchtzeitVorschlaege() {
+            const input = inputField.value.toLowerCase();
+            const vBox = document.getElementById('vorschlaege');
+            if (!input) { vBox.style.display = 'none'; return; }
+            const matches = [...new Set(historie)].filter(item => item.toLowerCase().includes(input));
+            vBox.innerHTML = matches.map(m => `<li onclick="fill('${m.replace(/'/g, "\\'")}')">${m}</li>`).join('');
+            vBox.style.display = matches.length ? 'block' : 'none';
+        }
+
+        window.fill = function(val) {
+            inputField.value = val;
+            document.getElementById('vorschlaege').style.display = 'none';
+            window.hinzufuegen();
+        };
+
+        window.hinzufuegen = function(produkt = null) {
+            const item = produkt || inputField.value.trim();
+            if (!item) return;
+            liste.unshift({id: Date.now(), text: item, done: false, qty: 1});
+            
+            historie.push(item);
+            
+            inputField.value = '';
+            document.getElementById('vorschlaege').style.display = 'none';
+            saveToCloud();
+            render();
+            inputField.focus();
+        };
+
+        // Neue Funktionen zum Leeren
         window.leereErledigte = function() {
             if(confirm("Alle erledigten Artikel löschen?")) {
                 liste = liste.filter(i => !i.done);
@@ -85,57 +144,167 @@
             }
         };
 
-        window.render = function() {
+        window.changeQty = function(id, delta) {
+            const item = liste.find(i => i.id === id);
+            if (item) {
+                item.qty = Math.max(1, item.qty + delta);
+                saveToCloud();
+                render();
+            }
+        };
+
+        window.toggleCheck = function(id) {
+            const item = liste.find(i => i.id === id);
+            if (item) item.done = !item.done;
+            saveToCloud();
+            render();
+        };
+
+        window.loeschen = function(id) {
+            liste = liste.filter(i => i.id !== id);
+            saveToCloud();
+            render();
+        };
+
+        function berechneTop10Einmalig() {
+            const letzte100 = historie.slice(-100);
+            const counts = {};
+            letzte100.forEach(i => counts[i] = (counts[i] || 0) + 1);
+            
+            const top10 = Object.keys(counts)
+                .sort((a, b) => counts[b] - counts[a])
+                .slice(0, 10);
+                
+            document.getElementById('top-bar').innerHTML = top10.map(t => 
+                `<button class="top-btn" onclick="hinzufuegen('${t.replace(/'/g, "\\'")}')">${t}</button>`
+            ).join('');
+        }
+
+        function render() {
+            const activeNames = liste.filter(i => !i.done).map(i => i.text.toLowerCase());
             const sortierte = [...liste].sort((a, b) => a.done - b.done || b.id - a.id);
-            document.getElementById('einkaufsliste').innerHTML = sortierte.map(i => `
-                <li class="${i.done ? 'completed' : ''}">
+            
+            document.getElementById('einkaufsliste').innerHTML = sortierte.map(i => {
+                const isDuplicate = !i.done && activeNames.filter(text => text === i.text.toLowerCase()).length > 1;
+                return `
+                <li class="${i.done ? 'completed' : ''} ${isDuplicate ? 'duplicate' : ''}">
                     <input type="checkbox" ${i.done ? 'checked' : ''} onchange="toggleCheck(${i.id})">
-                    <span>${i.text}</span>
+                    <span style="font-size: 1.05rem;">${i.text}</span>
                     <div class="qty-ctrl">
-                        <button class="qty-btn" onclick="changeQty(${i.id}, -1)">-</button>
-                        <span>${i.qty}</span>
+                        <button class="qty-btn" ${i.qty <= 1 ? 'disabled' : ''} onclick="changeQty(${i.id}, -1)">-</button>
+                        <span style="font-size: 1.05rem; font-weight: bold; min-width: 25px; text-align: center;">${i.qty}</span>
                         <button class="qty-btn" onclick="changeQty(${i.id}, 1)">+</button>
                     </div>
                     <button class="del-btn" onclick="loeschen(${i.id})">✕</button>
-                </li>`).join('');
-        };
-
-        window.toggleCheck = (id) => { liste.find(i => i.id === id).done = !liste.find(i => i.id === id).done; saveToCloud(); render(); };
-        window.changeQty = (id, delta) => { let i = liste.find(x => x.id === id); i.qty = Math.max(1, i.qty + delta); saveToCloud(); render(); };
-        window.loeschen = (id) => { liste = liste.filter(i => i.id !== id); saveToCloud(); render(); };
-
-        // Admin Logik bleibt gleich...
-        window.zeigeAdmin = (o) => { document.getElementById('main-view').style.display = o ? 'none' : 'block'; document.getElementById('admin-view').style.display = o ? 'block' : 'none'; };
+                </li>`;
+            }).join('');
+        }
     </script>
 
     <style>
-        :root { --main-color: #059669; }
-        body { font-family: sans-serif; background: #f8fafc; margin: 0; padding: 14px; }
-        .container { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-small { flex: 1; padding: 8px; font-size: 0.8rem; border: none; border-radius: 8px; cursor: pointer; background: #e2e8f0; }
-        .top-btn { font-size: 0.9rem; padding: 8px 12px; background: #d1fae5; border: none; border-radius: 20px; cursor: pointer; margin: 4px; }
-        li { display: grid; grid-template-columns: 40px 1fr 100px 40px; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .completed { color: #aaa; text-decoration: line-through; }
-        .qty-btn { background: #eee; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .del-btn { background: #fee2e2; color: red; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        :root { --main-color: #059669; --bg: #f8fafc; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            padding: 0; 
+            color: #1e293b; 
+            touch-action: pan-y; 
+        }
+        
+        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 14px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .title-area { display: flex; flex-direction: column; }
+        h2 { margin: 0; font-size: 1.6rem; }
+        .version { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 2px; }
+        
+        .manage-btn { background: #e2e8f0; border: none; border-radius: 10px; padding: 10px 14px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+
+        .form-group { position: relative; margin-bottom: 15px; }
+        input[type="text"] { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 1.1rem; -webkit-appearance: none; }
+        
+        button.add-btn { width: 100%; padding: 14px; background: var(--main-color); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 12px; cursor: pointer; }
+        
+        /* Neuer Button-Container für die Leeren-Funktionen */
+        .action-buttons { display: flex; gap: 8px; margin-top: 10px; }
+        .action-btn { flex: 1; padding: 10px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 60now; font-size: 0.9rem; cursor: pointer; color: #475569; }
+
+        .top-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .top-btn { font-size: 0.95rem; padding: 10px 16px; background: #e2e8f0; border: none; border-radius: 25px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
+
+        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
+        #vorschlaege li { padding: 14px; font-size: 1.05rem; border-bottom: 1px solid #e2e8f0; }
+
+        ul { list-style: none; padding: 0; margin-top: 15px; }
+        
+        li { display: grid; grid-template-columns: 40px 1fr 130px 50px; column-gap: 12px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
+        
+        li.completed { color: #94a3b8; text-decoration: line-through; }
+        li.duplicate { color: #dc2626; font-weight: bold; }
+        
+        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; }
+        
+        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .qty-btn { background: #cbd5e1; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; }
+        .qty-btn:disabled { opacity: 0.3; cursor: default; }
+        
+        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 10px 12px; border-radius: 8px; font-size: 1.05rem; justify-self: end; font-weight: bold; cursor: pointer; }
+
+        #admin-view { display: none; }
+        .back-btn { background: #cbd5e1; border: none; border-radius: 12px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; font-size: 1.05rem; }
     </style>
 </head>
 <body>
 
+<!-- HAUPTANSICHT -->
 <div id="main-view" class="container">
-    <h2>Einkaufsliste</h2>
-    <input type="text" id="eingabe" placeholder="Produkt..." style="width: 100%; padding: 12px; box-sizing: border-box;">
-    <button onclick="hinzufuegen()" style="width: 100%; padding: 12px; margin-top: 5px; background: var(--main-color); color: white; border: none; border-radius: 8px;">Hinzufügen</button>
-    
-    <div class="btn-group">
-        <button class="btn-small" onclick="leereErledigte()">Erledigte löschen</button>
-        <button class="btn-small" onclick="leereAlles()">Alles leeren</button>
+    <div class="header-row">
+        <div class="title-area">
+            <h2>Meine Liste</h2>
+            <span class="version">v1.9.1 (Cloud)</span>
+        </div>
+        <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
+    </div>
+    <div class="form-group">
+        <input type="text" id="eingabe" placeholder="Produkt eingeben..." autocomplete="off">
+        <ul id="vorschlaege"></ul>
+        
+        <button class="add-btn" onclick="hinzufuegen()">Hinzufügen</button>
+        
+        <div class="action-buttons">
+            <button class="action-btn" onclick="leereErledigte()">Erledigte löschen</button>
+            <button class="action-btn" onclick="leereAlles()">Liste leeren</button>
+        </div>
+
+        <div id="top-bar" class="top-bar"></div>
     </div>
 
-    <div id="top-bar" style="margin: 15px 0;"></div>
-    <ul id="einkaufsliste" style="list-style: none; padding: 0;"></ul>
+    <ul id="einkaufsliste"></ul>
 </div>
 
+<!-- VERWALTUNGS-ANSICHT FÜR VORSCHLÄGE -->
+<div id="admin-view" class="container">
+    <button class="back-btn" onclick="zeigeAdmin(false)">⬅️ Zurück zur Liste</button>
+    <h2>Vorschläge verwalten</h2>
+    <div class="form-group" style="margin-top: 15px;">
+        <input type="text" id="admin-filter" placeholder="Vorschlag filtern..." oninput="renderAdmin()">
+    </div>
+    <div id="admin-liste"></div>
+</div>
+
+<script>
+    document.addEventListener('touchstart', function (e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+</script>
 </body>
 </html>
