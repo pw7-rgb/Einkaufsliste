@@ -63,7 +63,7 @@
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
     </div>
     <div class="form-group">
-        <input type="text" id="eingabe" placeholder="Produkt eingeben..." oninput="zeigeEchtzeitVorschlaege()" autocomplete="off">
+        <input type="text" id="eingabe" placeholder="Produkt eingeben..." autocomplete="off">
         <ul id="vorschlaege"></ul>
         <div id="top-bar" class="top-bar"></div>
         <button class="add-btn" onclick="hinzufuegen()">Hinzufügen</button>
@@ -96,12 +96,25 @@
     let liste = JSON.parse(localStorage.getItem('einkauf') || '[]');
     let historie = JSON.parse(localStorage.getItem('historie') || '[]');
 
+    const inputField = document.getElementById('eingabe');
+
+    // Echtzeit-Vorschläge und Enter-Taste abfangen
+    inputField.addEventListener('input', zeigeEchtzeitVorschlaege);
+    inputField.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            hinzufuegen();
+        }
+    });
+
     function zeigeAdmin(Oeffnen) {
         document.getElementById('main-view').style.display = Oeffnen ? 'none' : 'block';
         document.getElementById('admin-view').style.display = Oeffnen ? 'block' : 'none';
         if (Oeffnen) {
             document.getElementById('admin-filter').value = '';
             renderAdmin();
+        } else {
+            inputField.focus();
         }
     }
 
@@ -126,7 +139,7 @@
     }
 
     function zeigeEchtzeitVorschlaege() {
-        const input = document.getElementById('eingabe').value.toLowerCase();
+        const input = inputField.value.toLowerCase();
         const vBox = document.getElementById('vorschlaege');
         if (!input) { vBox.style.display = 'none'; return; }
         const matches = [...new Set(historie)].filter(item => item.toLowerCase().includes(input));
@@ -135,19 +148,23 @@
     }
 
     function fill(val) {
-        document.getElementById('eingabe').value = val;
+        inputField.value = val;
         document.getElementById('vorschlaege').style.display = 'none';
         hinzufuegen();
     }
 
     function hinzufuegen(produkt = null) {
-        const item = produkt || document.getElementById('eingabe').value.trim();
+        const item = produkt || inputField.value.trim();
         if (!item) return;
         liste.unshift({id: Date.now(), text: item, done: false, qty: 1});
         historie.push(item);
         localStorage.setItem('historie', JSON.stringify(historie));
-        document.getElementById('eingabe').value = '';
+        inputField.value = '';
+        document.getElementById('vorschlaege').style.display = 'none';
         render();
+        
+        // Fokus im Textfeld behalten, damit die Tastatur offen bleibt
+        inputField.focus();
     }
 
     function changeQty(id, delta) {
