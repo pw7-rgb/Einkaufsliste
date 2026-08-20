@@ -24,11 +24,11 @@
 
         let liste = [];
         let historie = [];
-        let isRemoteUpdate = false; // Verhindert Endlosschleifen
+        let isRemoteUpdate = false;
 
         const inputField = document.getElementById('eingabe');
 
-        // Echtzeit-Lauscher für Firebase (Synchronisiert automatisch, wenn sich etwas ändert)
+        // Echtzeit-Lauscher für Firebase
         onSnapshot(doc(db, "daten", "einkaufsliste_hauptdaten"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -42,7 +42,7 @@
 
         // Daten in die Cloud schreiben
         window.saveToCloud = function() {
-            if (isRemoteUpdate) return; // Nicht speichern, wenn das Update gerade von außen kam
+            if (isRemoteUpdate) return;
             setDoc(doc(db, "daten", "einkaufsliste_hauptdaten"), {
                 einkauf: liste,
                 historie: historie
@@ -51,7 +51,6 @@
             });
         };
 
-        // UI Event Listeners
         inputField.addEventListener('input', zeigeEchtzeitVorschlaege);
         inputField.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -110,9 +109,10 @@
             const item = produkt || inputField.value.trim();
             if (!item) return;
             liste.unshift({id: Date.now(), text: item, done: false, qty: 1});
-            if (!historie.includes(item)) {
-                historie.push(item);
-            }
+            
+            // Zur Historie hinzufügen
+            historie.push(item);
+            
             inputField.value = '';
             document.getElementById('vorschlaege').style.display = 'none';
             saveToCloud();
@@ -143,8 +143,11 @@
         };
 
         function render() {
+            // Top 10 aus den letzten 100 Eingaben berechnen (häufigste zuerst)
+            const letzte100 = historie.slice(-100);
             const counts = {};
-            historie.forEach(i => counts[i] = (counts[i] || 0) + 1);
+            letzte100.forEach(i => counts[i] = (counts[i] || 0) + 1);
+            
             const top10 = Object.keys(counts)
                 .sort((a, b) => counts[b] - counts[a])
                 .slice(0, 10);
@@ -232,7 +235,7 @@
     <div class="header-row">
         <div class="title-area">
             <h2>Meine Liste</h2>
-            <span class="version">v1.7 (Cloud)</span>
+            <span class="version">v1.8 (Cloud + Top10)</span>
         </div>
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
     </div>
