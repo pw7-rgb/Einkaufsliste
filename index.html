@@ -62,7 +62,7 @@
         inputField.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                window.hinzufuegen(null, true); // Bei Enter Fokus behalten
+                window.hinzufuegen(null, true);
             }
         });
 
@@ -112,7 +112,6 @@
             window.hinzufuegen(null, true);
         };
 
-        // Parameter 'behalteFokus' steuert, ob die Tastatur aufgehen soll oder nicht
         window.hinzufuegen = function(produkt = null, behalteFokus = true) {
             const item = produkt || inputField.value.trim();
             if (!item) return;
@@ -128,7 +127,7 @@
             if (behalteFokus) {
                 inputField.focus();
             } else {
-                inputField.blur(); // Nimmt den Fokus weg, schließt die Tastatur auf dem Handy
+                inputField.blur();
             }
         };
 
@@ -191,7 +190,6 @@
                 .sort((a, b) => counts[b] - counts[a])
                 .slice(0, 10);
                 
-            // Hier übergeben wir jetzt 'false' als zweiten Wert, damit beim Klick der Fokus verschwindet
             document.getElementById('top-bar').innerHTML = top10.map(t => 
                 `<button class="top-btn" onclick="hinzufuegen('${t.replace(/'/g, "\\'")}', false)">${t}</button>`
             ).join('');
@@ -234,8 +232,15 @@
         .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 14px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .title-container { display: flex; align-items: center; gap: 10px; }
+        
+        /* Stylischer Einkaufswagen mit rotem Griff */
+        .cart-icon { width: 34px; height: 34px; fill: #1e293b; }
+        .cart-handle { stroke: #dc2626; stroke-width: 3; stroke-linecap: round; }
+
         .title-area { display: flex; flex-direction: column; }
-        h2 { margin: 0; font-size: 1.6rem; }
+        h2 { margin: 0; font-size: 1.6rem; line-height: 1.2; }
         .version { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 2px; }
         
         .manage-btn { background: #e2e8f0; border: none; border-radius: 10px; padding: 10px 14px; font-size: 1rem; cursor: pointer; font-weight: bold; }
@@ -281,9 +286,16 @@
 <!-- HAUPTANSICHT -->
 <div id="main-view" class="container">
     <div class="header-row">
-        <div class="title-area">
-            <h2>Einkaufsliste</h2>
-            <span class="version">v1.9.3</span>
+        <div class="title-container">
+            <!-- Einkaufswagen SVG mit rotem Griff -->
+            <svg class="cart-icon" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                <line x1="3" y1="3" x2="6" y2="3" class="cart-handle" />
+            </svg>
+            <div class="title-area">
+                <h2>Einkaufsliste</h2>
+                <span class="version">v1.9.4</span>
+            </div>
         </div>
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
     </div>
