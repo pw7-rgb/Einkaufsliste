@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Einkaufsliste</title>
+    <title>Einkaufsliste XXL MAX</title>
     <style>
         :root { --main-color: #059669; --bg: #f8fafc; }
         
@@ -16,42 +16,42 @@
             touch-action: pan-y; 
         }
         
-        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 20px; border-radius: 0 0 25px 25px; box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 16px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        h2 { margin: 0; font-size: 3.5em; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { margin: 0; font-size: 2.2rem; }
         
-        .manage-btn { background: #e2e8f0; border: none; border-radius: 18px; padding: 15px 20px; font-size: 24px; cursor: pointer; font-weight: bold; }
+        .manage-btn { background: #e2e8f0; border: none; border-radius: 12px; padding: 12px 16px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
 
-        .form-group { position: relative; margin-bottom: 30px; }
-        input[type="text"] { width: 100%; padding: 32px; border: 5px solid #cbd5e1; border-radius: 24px; box-sizing: border-box; font-size: 38px; -webkit-appearance: none; }
+        .form-group { position: relative; margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 20px; border: 3px solid #cbd5e1; border-radius: 16px; box-sizing: border-box; font-size: 1.4rem; -webkit-appearance: none; }
         
-        button.add-btn { width: 100%; padding: 32px; background: var(--main-color); color: white; border: none; border-radius: 24px; font-weight: bold; font-size: 38px; margin-top: 20px; }
+        button.add-btn { width: 100%; padding: 20px; background: var(--main-color); color: white; border: none; border-radius: 16px; font-weight: bold; font-size: 1.4rem; margin-top: 15px; cursor: pointer; }
         
-        .top-bar { display: flex; flex-wrap: wrap; gap: 16px; margin: 25px 0; }
-        .top-btn { font-size: 32px; padding: 24px 36px; background: #e2e8f0; border: none; border-radius: 50px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+        .top-btn { font-size: 1.1rem; padding: 14px 20px; background: #e2e8f0; border: none; border-radius: 30px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
 
-        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 4px solid #cbd5e1; border-radius: 24px; max-height: 450px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 12px 24px rgba(0,0,0,0.2); }
-        #vorschlaege li { padding: 32px; font-size: 38px; border-bottom: 3px solid #e2e8f0; }
+        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 3px solid #cbd5e1; border-radius: 16px; max-height: 300px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+        #vorschlaege li { padding: 20px; font-size: 1.3rem; border-bottom: 2px solid #e2e8f0; }
 
-        ul { list-style: none; padding: 0; margin-top: 30px; }
+        ul { list-style: none; padding: 0; margin-top: 20px; }
         
-        li { display: grid; grid-template-columns: 80px 1fr 240px 90px; column-gap: 20px; align-items: center; padding: 24px 0; border-bottom: 4px solid #f1f5f9; min-height: 120px; }
+        li { display: grid; grid-template-columns: 50px 1fr 160px 60px; column-gap: 15px; align-items: center; padding: 16px 0; border-bottom: 3px solid #f1f5f9; min-height: 80px; }
         
         li.completed { color: #94a3b8; text-decoration: line-through; }
         li.duplicate { color: #dc2626; font-weight: bold; }
         
-        input[type="checkbox"] { width: 60px; height: 60px; accent-color: var(--main-color); cursor: pointer; }
+        input[type="checkbox"] { width: 36px; height: 36px; accent-color: var(--main-color); cursor: pointer; }
         
-        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 20px; }
-        .qty-btn { background: #cbd5e1; border: none; border-radius: 18px; padding: 18px 30px; font-size: 36px; font-weight: bold; cursor: pointer; }
+        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .qty-btn { background: #cbd5e1; border: none; border-radius: 12px; padding: 10px 18px; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
         .qty-btn:disabled { opacity: 0.3; cursor: default; }
         
-        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 20px; border-radius: 18px; font-size: 36px; justify-self: end; font-weight: bold; cursor: pointer; }
+        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 12px 16px; border-radius: 12px; font-size: 1.3rem; justify-self: end; font-weight: bold; cursor: pointer; }
 
         #admin-view { display: none; }
-        .back-btn { background: #cbd5e1; border: none; border-radius: 24px; padding: 24px; font-size: 32px; font-weight: bold; width: 100%; margin-bottom: 30px; cursor: pointer; }
-        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 3px solid #f1f5f9; font-size: 36px; }
+        .back-btn { background: #cbd5e1; border: none; border-radius: 16px; padding: 16px; font-size: 1.2rem; font-weight: bold; width: 100%; margin-bottom: 20px; cursor: pointer; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 2px solid #f1f5f9; font-size: 1.3rem; }
     </style>
 </head>
 <body>
@@ -76,7 +76,7 @@
 <div id="admin-view" class="container">
     <button class="back-btn" onclick="zeigeAdmin(false)">⬅️ Zurück zur Liste</button>
     <h2>Vorschläge verwalten</h2>
-    <div class="form-group" style="margin-top: 20px;">
+    <div class="form-group" style="margin-top: 15px;">
         <input type="text" id="admin-filter" placeholder="Vorschlag filtern..." oninput="renderAdmin()">
     </div>
     <div id="admin-liste"></div>
@@ -172,7 +172,6 @@
     function render() {
         localStorage.setItem('einkauf', JSON.stringify(liste));
         
-        // Top 10 dynamisch nach Häufigkeit berechnen
         const counts = {};
         historie.forEach(i => counts[i] = (counts[i] || 0) + 1);
         const top10 = Object.keys(counts)
@@ -191,10 +190,10 @@
             return `
             <li class="${i.done ? 'completed' : ''} ${isDuplicate ? 'duplicate' : ''}">
                 <input type="checkbox" ${i.done ? 'checked' : ''} onchange="toggleCheck(${i.id})">
-                <span style="font-size: 38px;">${i.text}</span>
+                <span style="font-size: 1.3rem;">${i.text}</span>
                 <div class="qty-ctrl">
                     <button class="qty-btn" ${i.qty <= 1 ? 'disabled' : ''} onclick="changeQty(${i.id}, -1)">-</button>
-                    <span style="font-size: 38px; font-weight: bold; min-width: 50px; text-align: center;">${i.qty}</span>
+                    <span style="font-size: 1.3rem; font-weight: bold; min-width: 35px; text-align: center;">${i.qty}</span>
                     <button class="qty-btn" onclick="changeQty(${i.id}, 1)">+</button>
                 </div>
                 <button class="del-btn" onclick="loeschen(${i.id})">✕</button>
@@ -205,4 +204,3 @@
 </script>
 </body>
 </html>
-
