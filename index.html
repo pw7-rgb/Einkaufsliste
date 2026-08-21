@@ -203,10 +203,10 @@
                 <li class="${i.done ? 'completed' : ''} ${isDuplicate ? 'duplicate' : ''}">
                     <input type="checkbox" ${i.done ? 'checked' : ''} onchange="toggleCheck(${i.id})">
                     <button class="edit-btn" onclick="bearbeiteItem(${i.id})" title="Bearbeiten">✏️</button>
-                    <span style="font-size: 1.05rem;">${i.text}</span>
+                    <span style="font-size: 0.85rem;">${i.text}</span>
                     <div class="qty-ctrl">
                         <button class="qty-btn" ${i.qty <= 1 ? 'disabled' : ''} onclick="changeQty(${i.id}, -1)">-</button>
-                        <span style="font-size: 1.05rem; font-weight: bold; min-width: 25px; text-align: center;">${i.qty}</span>
+                        <span style="font-size: 0.85rem; font-weight: bold; min-width: 20px; text-align: center;">${i.qty}</span>
                         <button class="qty-btn" onclick="changeQty(${i.id}, 1)">+</button>
                     </div>
                     <button class="del-btn" onclick="loeschen(${i.id})">✕</button>
@@ -227,56 +227,57 @@
             touch-action: pan-y; 
         }
         
-        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 14px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .container { width: 100%; box-sizing: border-box; margin: 0; background: white; padding: 10px; border-radius: 0 0 12px 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
         
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         
-        .title-container { display: flex; align-items: center; gap: 10px; }
+        .title-container { display: flex; align-items: center; gap: 8px; }
         
-        /* Stylischer Einkaufswagen mit rotem Griff */
-        .cart-icon { width: 34px; height: 34px; fill: #1e293b; }
-        .cart-handle { stroke: #dc2626; stroke-width: 3; stroke-linecap: round; }
+        /* Etwas kompakterer Einkaufswagen */
+        .cart-icon { width: 24px; height: 24px; fill: #1e293b; }
+        .cart-handle { stroke: #dc2626; stroke-width: 2.5; stroke-linecap: round; }
 
         .title-area { display: flex; flex-direction: column; }
-        h2 { margin: 0; font-size: 1.6rem; line-height: 1.2; }
-        .version { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 2px; }
+        h2 { margin: 0; font-size: 1.15rem; line-height: 1.2; }
+        .version { font-size: 0.55rem; color: #94a3b8; font-weight: 600; margin-top: 1px; }
         
-        .manage-btn { background: #e2e8f0; border: none; border-radius: 10px; padding: 10px 14px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+        .manage-btn { background: #e2e8f0; border: none; border-radius: 7px; padding: 7px 10px; font-size: 0.85rem; cursor: pointer; font-weight: bold; }
 
-        .form-group { position: relative; margin-bottom: 15px; }
-        input[type="text"] { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 1.1rem; -webkit-appearance: none; }
+        .form-group { position: relative; margin-bottom: 10px; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 9px; box-sizing: border-box; font-size: 0.85rem; -webkit-appearance: none; }
         
-        button.add-btn { width: 100%; padding: 14px; background: var(--main-color); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 12px; cursor: pointer; }
+        button.add-btn { width: 100%; padding: 10px; background: var(--main-color); color: white; border: none; border-radius: 9px; font-weight: bold; font-size: 0.85rem; margin-top: 8px; cursor: pointer; }
         
-        .action-buttons { display: flex; gap: 8px; margin-top: 10px; }
-        .action-btn { flex: 1; padding: 10px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #475569; }
+        .action-buttons { display: flex; gap: 6px; margin-top: 8px; }
+        .action-btn { flex: 1; padding: 7px; background: #e2e8f0; border: none; border-radius: 7px; font-weight: 600; font-size: 0.7rem; cursor: pointer; color: #475569; }
 
-        .top-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
-        .top-btn { font-size: 0.95rem; padding: 10px 16px; background: #e2e8f0; border: none; border-radius: 25px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .top-btn { font-size: 0.75rem; padding: 7px 11px; background: #e2e8f0; border: none; border-radius: 18px; cursor: pointer; touch-action: manipulation; font-weight: 600; }
 
-        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 250px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
-        #vorschlaege li { padding: 14px; font-size: 1.05rem; border-bottom: 1px solid #e2e8f0; }
+        #vorschlaege { list-style: none; padding: 0; margin: 0; border: 1.5px solid #cbd5e1; border-radius: 9px; max-height: 180px; overflow-y: auto; display: none; background: #fff; position: absolute; width: 100%; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #vorschlaege li { padding: 10px; font-size: 0.85rem; border-bottom: 1px solid #e2e8f0; }
 
-        ul { list-style: none; padding: 0; margin-top: 15px; }
+        ul { list-style: none; padding: 0; margin-top: 10px; }
         
-        li { display: grid; grid-template-columns: 28px 28px 1fr 130px 50px; column-gap: 10px; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; min-height: 60px; }
+        /* Ca. 30% verkleinertes Listenelement-Grid (Checkbox 20px, Stift 20px) */
+        li { display: grid; grid-template-columns: 20px 20px 1fr 95px 35px; column-gap: 7px; align-items: center; padding: 8px 0; border-bottom: 1.5px solid #f1f5f9; min-height: 42px; }
         
         li.completed { color: #94a3b8; text-decoration: line-through; }
         li.duplicate { color: #dc2626; font-weight: bold; }
         
-        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--main-color); cursor: pointer; margin: 0; }
+        input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--main-color); cursor: pointer; margin: 0; }
         
-        .edit-btn { width: 28px; height: 28px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+        .edit-btn { width: 20px; height: 20px; background: #e2e8f0; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
         
-        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .qty-btn { background: #cbd5e1; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; }
+        .qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .qty-btn { background: #cbd5e1; border: none; border-radius: 6px; padding: 5px 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
         .qty-btn:disabled { opacity: 0.3; cursor: default; }
         
-        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 10px 12px; border-radius: 8px; font-size: 1.05rem; justify-self: end; font-weight: bold; cursor: pointer; }
+        .del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 7px 9px; border-radius: 6px; font-size: 0.8rem; justify-self: end; font-weight: bold; cursor: pointer; }
 
         #admin-view { display: none; }
-        .back-btn { background: #cbd5e1; border: none; border-radius: 12px; padding: 12px; font-size: 1rem; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; }
-        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 2px solid #f1f5f9; font-size: 1.05rem; }
+        .back-btn { background: #cbd5e1; border: none; border-radius: 9px; padding: 8px; font-size: 0.8rem; font-weight: bold; width: 100%; margin-bottom: 10px; cursor: pointer; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1.5px solid #f1f5f9; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -292,7 +293,7 @@
             </svg>
             <div class="title-area">
                 <h2>Einkaufsliste</h2>
-                <span class="version">v1.9.4</span>
+                <span class="version">v1.9.5</span>
             </div>
         </div>
         <button class="manage-btn" onclick="zeigeAdmin(true)">⚙️</button>
@@ -318,7 +319,7 @@
 <div id="admin-view" class="container">
     <button class="back-btn" onclick="zeigeAdmin(false)">⬅️ Zurück zur Liste</button>
     <h2>Vorschläge verwalten</h2>
-    <div class="form-group" style="margin-top: 15px;">
+    <div class="form-group" style="margin-top: 10px;">
         <input type="text" id="admin-filter" placeholder="Vorschlag filtern..." oninput="renderAdmin()">
     </div>
     <div id="admin-liste"></div>
